@@ -51,6 +51,7 @@ export class AppComponent {
   css_rotateCenter = false;
   css_rotateHorTop = false;
   keepPlayingAnimation = false;
+  isPlaying = false;
 
 
   constructor() {
@@ -103,17 +104,41 @@ export class AppComponent {
     await this.waitFor(1)
   }
 
+playShake() {
+  if(!this.isPlaying)
+    return
+  this.css_rotateCenter = true;
+  setTimeout(() => {
+    // On appel playBounce, qui va appeler playShake, qui va appeler playBounce, qui va appeler playShake, qui va appeler....
+      this.css_rotateCenter = false;
+
+    this.playBounce();
+  },1000);
+}
+
+playBounce() {
+    if(!this.isPlaying)
+    return
+  this.css_rotateHorTop = true;
+  setTimeout(() => {
+      this.css_rotateHorTop = false;
+
+    this.playShake();
+  },1000);
+}
+
   
 
   infinite(){
-    this.keepPlayingAnimation = !this.keepPlayingAnimation;
-    // TODO Utilisé Animista pour faire une animation différente avec css (wobble)
-    this.css_rotateCenter = true;
-    setTimeout(() => {
-    // Après 1 seconde
-    if(this.keepPlayingAnimation)
-      this.infinite();
-  },1000);
+    if(this.isPlaying)
+    {
+      this.isPlaying = false;
+      this.css_rotateHorTop = false;
+      this.css_rotateCenter = false;
+      return
+    }
+    this.isPlaying =true;
+    this.playShake();
   }
 
   async waitFor(delayInSeconds:number) {
